@@ -1,0 +1,18 @@
+{
+    "name": "com.tofunaut.tofubootstrap",
+    "version": "1.0.0",
+    "displayName": "TofuBootstrap",
+    "description": "A bunch of scripts used to start up a project quickly for Tofunaut.",
+    "unity": "2020.3",
+    "unityRelease": "11f1",
+    "dependencies": {
+      "com.unity.addressables": "1.19.11"
+    },
+    "keywords": [
+      "unity"
+    ],
+    "author": {
+      "name" : "Nathaniel Elingson",
+      "url" : "www.tofunaut.com"
+    }
+  }
