@@ -1,0 +1,18 @@
+{
+    "name": "Tofunaut.Bootstrap.Editor",
+    "rootNamespace": "Tofunaut.Bootstrap",
+    "references": [
+        "GUID:faa987cdfcd7942e7959ebee431b77cf"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
