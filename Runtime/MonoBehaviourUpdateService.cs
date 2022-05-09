@@ -1,9 +1,10 @@
 ﻿using System;
 using Tofunaut.Bootstrap.Interfaces;
+using UnityEngine;
 
 namespace Tofunaut.Bootstrap
 {
-    public class MonoBehaviourUpdateService : IUpdateService
+    public class MonoBehaviourUpdateService : MonoBehaviour, IUpdateService
     {
         public event Action Updated;
 
