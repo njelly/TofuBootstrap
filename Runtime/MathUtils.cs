@@ -12,13 +12,5 @@ namespace Tofunaut.Bootstrap
 
         public static float SmallestAngleDifferenceRad(float fromRad, float toRad) =>
             SmallestAngleDifferenceDeg(fromRad * Mathf.Rad2Deg, toRad * Mathf.Rad2Deg) * Mathf.Deg2Rad;
-
-        public static int BetterMod(int x, int m)
-        {
-            while (x < m)
-                x += m;
-
-            return x % m;
-        }
     }
 }

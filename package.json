@@ -3,8 +3,8 @@
     "version": "1.0.0",
     "displayName": "TofuBootstrap",
     "description": "A bunch of scripts used to start up a project quickly for Tofunaut.",
-    "unity": "2021.2",
-    "unityRelease": "14f1",
+    "unity": "2021.3",
+    "unityRelease": "2f1",
     "dependencies": {
       "com.unity.addressables": "1.19.19"
     },
