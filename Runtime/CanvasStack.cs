@@ -6,21 +6,19 @@ using Tofunaut.Bootstrap.Interfaces;
 using Tofunaut.Bootstrap.UnityModels;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
-using UnityEngine.ResourceManagement.AsyncOperations;
-using Object = UnityEngine.Object;
 
 namespace Tofunaut.Bootstrap
 {
     public class CanvasStack
     {
-        private readonly Stack<ICanvasViewController> _stack;
+        private readonly Stack<IUIController> _stack;
         private readonly Canvas _canvas;
         private readonly Dictionary<Type, Type> _modelTypeToViewType;
         private readonly Dictionary<Type, AssetReference> _viewTypeToAssetReference;
 
         public CanvasStack(Canvas canvas)
         {
-            _stack = new Stack<ICanvasViewController>();
+            _stack = new Stack<IUIController>();
             _modelTypeToViewType = new Dictionary<Type, Type>();
             _viewTypeToAssetReference = new Dictionary<Type, AssetReference>();
 
@@ -29,7 +27,7 @@ namespace Tofunaut.Bootstrap
         
         public CanvasStack(CanvasModel canvasModel)
         {
-            _stack = new Stack<ICanvasViewController>();
+            _stack = new Stack<IUIController>();
             _modelTypeToViewType = new Dictionary<Type, Type>();
             _viewTypeToAssetReference = new Dictionary<Type, AssetReference>();
 
@@ -41,42 +39,42 @@ namespace Tofunaut.Bootstrap
         /// before the CanvasViewController is pushed.
         /// </summary>
         /// <param name="assetReference"></param>
-        /// <typeparam name="TCanvasViewController"></typeparam>
-        /// <typeparam name="TCanvasViewModel"></typeparam>
-        public void RegisterViewController<TCanvasViewController, TCanvasViewModel>(AssetReference assetReference) where TCanvasViewController : CanvasViewController<TCanvasViewModel>
+        /// <typeparam name="TUIController"></typeparam>
+        /// <typeparam name="TUIModel"></typeparam>
+        public void RegisterController<TUIController, TUIModel>(AssetReference assetReference) where TUIController : UIController<TUIModel>
         {
-            _modelTypeToViewType.Add(typeof(TCanvasViewModel), typeof(TCanvasViewController));
-            _viewTypeToAssetReference.Add(typeof(TCanvasViewController), assetReference);
+            _modelTypeToViewType.Add(typeof(TUIModel), typeof(TUIController));
+            _viewTypeToAssetReference.Add(typeof(TUIController), assetReference);
         }
 
         /// <summary>
         /// Push the CanvasViewController with the requested type to the stack.
         /// </summary>
         /// <param name="model">The model for the CanvasViewController</param>
-        /// <typeparam name="TCanvasViewController">The type of CanvasViewController to push to the stack.</typeparam>
-        /// <typeparam name="TCanvasViewModel">The type of model the CanvasViewController will be initialized with.</typeparam>
+        /// <typeparam name="TUIController">The type of CanvasViewController to push to the stack.</typeparam>
+        /// <typeparam name="TUIModel">The type of model the CanvasViewController will be initialized with.</typeparam>
         /// <returns>The pushed CanvasViewController.</returns>
-        /// <exception cref="ViewNotRegisteredException{TViewController}"></exception>
-        public async Task<TCanvasViewController> Push<TCanvasViewController, TCanvasViewModel>(TCanvasViewModel model) where TCanvasViewController : CanvasViewController<TCanvasViewModel>
+        /// <exception cref="UIControllerNotRegisteredException{TViewController}"></exception>
+        public async Task<TUIController> Push<TUIController, TUIModel>(TUIModel model) where TUIController : UIController<TUIModel>
         {
-            if (!_modelTypeToViewType.TryGetValue(typeof(TCanvasViewModel), out var viewType))
-                throw new ViewNotRegisteredException<TCanvasViewController>();
+            if (!_modelTypeToViewType.TryGetValue(typeof(TUIModel), out var viewType))
+                throw new UIControllerNotRegisteredException<TUIController>();
 
             if (!_viewTypeToAssetReference.TryGetValue(viewType, out var assetReference))
-                throw new ViewNotRegisteredException<TCanvasViewController>();
+                throw new UIControllerNotRegisteredException<TUIController>();
 
             var go = await Addressables.InstantiateAsync(assetReference, _canvas.transform).Task;
-            var viewController = go.GetComponent<TCanvasViewController>();
+            var uiController = go.GetComponent<TUIController>();
 
             if (_stack.Count > 0)
                 await _stack.Peek().OnLostFocus();
             
-            await viewController.OnPushedToStack(model);
-            await viewController.OnGainedFocus();
+            await uiController.OnPushedToStack(model);
+            await uiController.OnGainedFocus();
             
-            _stack.Push(viewController);
+            _stack.Push(uiController);
 
-            return viewController;
+            return uiController;
         }
 
         /// <summary>
@@ -104,7 +102,7 @@ namespace Tofunaut.Bootstrap
         /// </summary>
         /// <param name="alsoPopRequested">If true, the view controller with the requested type will also be popped.</param>
         /// <typeparam name="TCanvasViewController"></typeparam>
-        public async Task PopUntil<TCanvasViewController>(bool alsoPopRequested) where TCanvasViewController : ICanvasViewController
+        public async Task PopUntil<TCanvasViewController>(bool alsoPopRequested) where TCanvasViewController : IUIController
         {
             if (!_stack.Any(x => x is TCanvasViewController))
             {
@@ -124,7 +122,7 @@ namespace Tofunaut.Bootstrap
         /// </summary>
         /// <param name="canvasViewController">The instance of the view controller to pop to.</param>
         /// <param name="alsoPopRequested">If true, the view controller with the requested type will also be popped.</param>
-        public async Task PopUntil(ICanvasViewController canvasViewController, bool alsoPopRequested)
+        public async Task PopUntil(IUIController canvasViewController, bool alsoPopRequested)
         {
             if (_stack.All(x => x != canvasViewController))
             {
@@ -148,10 +146,10 @@ namespace Tofunaut.Bootstrap
                 await Pop();
         }
 
-        public class ViewNotRegisteredException<TViewController> : Exception where TViewController : ICanvasViewController
+        public class UIControllerNotRegisteredException<UIController> : Exception where UIController : IUIController
         {
-            public ViewNotRegisteredException() : base(
-                $"the view controller {typeof(TViewController)} has not been registered") { }
+            public UIControllerNotRegisteredException() : base(
+                $"the view controller {typeof(UIController)} has not been registered") { }
         }
     }
 }

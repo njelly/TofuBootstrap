@@ -4,12 +4,12 @@ using UnityEngine;
 
 namespace Tofunaut.Bootstrap
 {
-    public abstract class CanvasViewController<TCanvasViewModel> : MonoBehaviour, ICanvasViewController
+    public abstract class UIController<TUIModel> : MonoBehaviour, IUIController
     {
         public GameObject GameObject => gameObject;
-        public abstract Task OnPushedToStack(TCanvasViewModel model);
+        public abstract Task OnPushedToStack(TUIModel model);
 
-        public Task OnPushedToStack(object model) => OnPushedToStack((TCanvasViewModel)model);
+        public Task OnPushedToStack(object model) => OnPushedToStack((TUIModel)model);
 
         public virtual Task OnGainedFocus() => Task.CompletedTask;
         public virtual Task OnLostFocus() => Task.CompletedTask;
